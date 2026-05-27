@@ -297,7 +297,23 @@
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let likedPosts = new Set(JSON.parse(localStorage.getItem('likedPosts') || '[]'));
 
-    const PROXY = 'https://api.allorigins.win/raw?url=';
+    const PROXY_LIST = [
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    ];
+    async function fetchRss(rssUrl) {
+      for (const makeUrl of PROXY_LIST) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 8000);
+          const res = await fetch(makeUrl(rssUrl), { signal: ctrl.signal });
+          clearTimeout(timer);
+          if (res.ok) { const t = await res.text(); if (t && t.includes('<item')) return t; }
+        } catch(e) { /* try next proxy */ }
+      }
+      throw new Error('All proxies failed');
+    }
     const categoryMeta = {
       economy:    { title: '경제',          subtitle: '글로벌 경제 동향 실시간 뉴스',       tag: '경제'    },
       tech:       { title: '테크',          subtitle: '기술·AI 산업 핵심 이슈 실시간 뉴스',  tag: '테크'    },
@@ -372,9 +388,7 @@
     async function fetchNews(cat) {
       showSkeleton();
       try {
-        const res  = await fetch(PROXY + encodeURIComponent(RSS_FEEDS[cat]));
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
+        const text = await fetchRss(RSS_FEEDS[cat]);
         const doc  = new DOMParser().parseFromString(text,'text/xml');
         const items = [...doc.querySelectorAll('item')].slice(0,5);
         if (!items.length) throw new Error('No items');
@@ -940,7 +954,7 @@
           <div class="text-4xl mb-3">⚠️</div>
           <p class="text-sm mb-1" style="font-weight:600;color:#1e1b4b">뉴스를 불러오지 못했습니다</p>
           <p class="text-xs mb-5" style="color:#9ca3af">RSS 서버 연결 실패. 잠시 후 다시 시도해주세요.</p>
-          <button onclick="fetchNews('${escAttr(cat)}')" class="btn-primary btn-sm">다시 시도</button>
+          <button onclick="fetchNews('${cat}')" class="btn-primary btn-sm">다시 시도</button>
         </div>`;
     }
 
