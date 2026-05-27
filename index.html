@@ -142,7 +142,7 @@
     let currentCategory    = 'economy';
     let bookmarkedIds      = new Set();
     let liveCache          = {};
-    let archiveState       = { openDate: null };
+    let archiveState       = { selectedCat: null, openDate: null };
     let articleContext     = null; // 아카이브에서 토론으로 넘어올 때 설정
 
     // ── RSS 파싱 ──────────────────────────────────────────────────────
@@ -210,7 +210,7 @@
         articleContext = ctx;
         fetchDiscussions();
       } else if (cat==='archive') {
-        archiveState = { openDate: null };
+        archiveState = { selectedCat: null, openDate: null };
         fetchArchive();
       } else if (liveCache[cat]) {
         renderCards(liveCache[cat]);
@@ -221,10 +221,13 @@
 
     // ── 아카이브 ──────────────────────────────────────────────────────
     async function fetchArchive() {
+      if (!archiveState.selectedCat) { renderArchiveCatSelect(); return; }
       const container = document.getElementById('news-container');
       container.innerHTML = skeletonList();
       const { data, error } = await sb.from('news_archive')
-        .select('id,batch_id,category,saved_at').order('saved_at',{ascending:false}).limit(1000);
+        .select('id,batch_id,category,saved_at')
+        .eq('category', archiveState.selectedCat)
+        .order('saved_at',{ascending:false}).limit(1000);
       if (error) { container.innerHTML = errorBox(error.message); return; }
 
       const batchMap = {};
@@ -243,16 +246,64 @@
       renderArchiveDates(byDate);
     }
 
+    function renderArchiveCatSelect() {
+      const container = document.getElementById('news-container');
+      const cats = [
+        { key:'economy', label:'경제', icon:'📈', desc:'금융·경제 뉴스 아카이브' },
+        { key:'tech',    label:'테크',  icon:'💡', desc:'기술·AI 뉴스 아카이브' },
+        { key:'risk',    label:'리스크 관리', icon:'🛡️', desc:'위험 요소 뉴스 아카이브' }
+      ];
+      container.innerHTML = `
+        <div class="mb-6">
+          <h2 class="text-lg text-gray-900 mb-1" style="font-weight:700">카테고리 선택</h2>
+          <p class="text-sm text-gray-400">조회할 카테고리를 선택하세요</p>
+        </div>
+        <div class="flex flex-col gap-4">
+          ${cats.map(c => `
+            <button onclick="selectArchiveCat('${c.key}')"
+              class="bg-white rounded-xl border border-gray-200 px-6 py-5 text-left hover:border-brand-400 hover:shadow-md transition-all flex items-center gap-5 card-hover">
+              <span class="text-4xl">${c.icon}</span>
+              <div>
+                <p class="text-base text-gray-900" style="font-weight:700">${c.label}</p>
+                <p class="text-sm text-gray-400 mt-0.5">${c.desc}</p>
+              </div>
+              <svg class="ml-auto w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>`).join('')}
+        </div>`;
+    }
+
+    function selectArchiveCat(cat) {
+      archiveState.selectedCat = cat;
+      archiveState.openDate = null;
+      fetchArchive();
+    }
+
     function renderArchiveDates(byDate) {
       const container = document.getElementById('news-container');
+      const cat = archiveState.selectedCat;
+      const catLabel = CAT_LABELS[cat]||cat;
+      const catIcon  = CAT_ICONS[cat]||'📁';
+      const backToCat = `
+        <button onclick="archiveState.selectedCat=null;archiveState.openDate=null;fetchArchive()"
+          class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-brand-500 transition mb-4" style="font-weight:500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>카테고리 선택
+        </button>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xl">${catIcon}</span>
+          <span class="text-base text-gray-900" style="font-weight:700">${escHtml(catLabel)} 아카이브</span>
+        </div>`;
       const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
       if (!dates.length) {
-        container.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
+        container.innerHTML = backToCat + `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
           <div class="text-4xl mb-3">📭</div>
           <p class="text-gray-400 text-sm">저장된 뉴스가 없습니다.<br>뉴스 탭을 클릭하면 자동으로 저장됩니다.</p></div>`;
         return;
       }
-      container.innerHTML = dates.map((date,di) => {
+      container.innerHTML = backToCat + dates.map((date,di) => {
         const batches = byDate[date].sort((a,b)=>b.saved_at.localeCompare(a.saved_at));
         const isOpen  = date === archiveState.openDate;
         const total   = batches.reduce((s,b)=>s+b.count,0);
@@ -285,7 +336,7 @@
     }
 
     function toggleDate(date) {
-      archiveState.openDate = archiveState.openDate===date ? null : date;
+      archiveState.openDate = archiveState.openDate === date ? null : date;
       fetchArchive();
     }
 
