@@ -140,20 +140,22 @@
 
     function parseDescription(raw) {
       if (!raw) return [];
-      // HTML 태그 제거 후 엔티티 디코딩
       const stripped = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      const text = decodeHtmlEntities(stripped).replace(/\s+/g, ' ').trim();
+      const text = decodeHtmlEntities(stripped)
+        .replace(/^[▲△▶◆■●※\s]+/, '')  // 앞의 특수기호 제거
+        .replace(/\s+/g, ' ').trim();
       if (!text) return [];
-      // 문장 단위로 분리 (마침표/느낌표/물음표 기준)
+      // 문장 단위 분리 (마침표/느낌표/물음표 기준)
       const sentences = text.split(/(?<=[.!?…])\s+/).map(s => s.trim()).filter(s => s.length > 8);
       if (sentences.length >= 2) return sentences.slice(0, 3);
-      // 문장 구분이 안 될 경우 글자 수 기준으로 분할
-      if (text.length > 60) {
-        const chunkSize = Math.ceil(text.length / 3);
+      // 단어 경계 기준으로 3등분
+      if (text.length > 40) {
+        const words = text.split(' ');
+        const third = Math.ceil(words.length / 3);
         return [
-          text.slice(0, chunkSize).trim(),
-          text.slice(chunkSize, chunkSize * 2).trim(),
-          text.slice(chunkSize * 2).trim()
+          words.slice(0, third).join(' '),
+          words.slice(third, third * 2).join(' '),
+          words.slice(third * 2).join(' ')
         ].filter(s => s.length > 4).slice(0, 3);
       }
       return [text];
