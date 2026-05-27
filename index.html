@@ -20,7 +20,7 @@
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     body { font-family: 'Noto Sans KR', sans-serif; }
     .card-hover { transition: box-shadow 0.2s ease, transform 0.2s ease; }
@@ -31,42 +31,12 @@
     .bookmark-active   { color: #3b5bdb; }
     .bookmark-inactive { color: #9ca3af; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes spin   { to { transform: rotate(360deg); } }
-    .spin { animation: spin 0.9s linear infinite; }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-
-  <!-- ── API Key 설정 모달 ─────────────────────────────────────────── -->
-  <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-base font-bold text-gray-900">AI 요약 설정</h3>
-        <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <p class="text-xs text-gray-500 mb-3">OpenAI API Key를 입력하면 뉴스 카드마다 AI 3줄 요약이 자동으로 생성됩니다.<br>키는 브라우저 로컬스토리지에만 저장되며 외부로 전송되지 않습니다.</p>
-      <div class="mb-4">
-        <label class="text-xs font-semibold text-gray-600 block mb-1">OpenAI API Key</label>
-        <input id="api-key-input" type="password" placeholder="sk-..." autocomplete="off"
-          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-mono" />
-      </div>
-      <div class="bg-gray-50 rounded-lg p-3 mb-4 text-xs text-gray-500 space-y-1">
-        <p>• 모델: <span class="font-semibold text-gray-700">gpt-4o-mini</span></p>
-        <p>• 시스템 프롬프트: <span class="italic">"너는 냉철한 투자 리스크 관리자다. 이 뉴스가 거시 경제나 산업 리스크에 미칠 영향을 중심으로 딱 3줄로 건조하게 요약해라"</span></p>
-      </div>
-      <div class="flex gap-2 justify-end">
-        <button onclick="closeSettings()" class="text-xs text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg border border-gray-200 transition">취소</button>
-        <button onclick="saveSettings()" class="text-xs text-white bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg transition font-semibold">저장 &amp; 요약 시작</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ── Top Header ────────────────────────────────────────────────── -->
   <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -79,22 +49,11 @@
           </svg>
         </div>
         <div>
-          <h1 class="text-base text-gray-900 leading-tight" style="font-weight:700">AI 뉴스 요약 대시보드</h1>
-          <p class="text-xs text-gray-400">AI-powered Financial & Tech Intelligence</p>
+          <h1 class="text-base text-gray-900 leading-tight" style="font-weight:700">뉴스 요약 대시보드</h1>
+          <p class="text-xs text-gray-400">Financial & Tech Intelligence</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="last-updated" class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Last updated: —</span>
-        <!-- AI Key 설정 버튼 -->
-        <button onclick="openSettings()" id="ai-key-btn" title="AI 요약 API Key 설정"
-          class="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-gray-200 hover:border-brand-500 hover:text-brand-500 text-gray-500 transition">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-          </svg>
-          <span id="ai-key-label">API Key 설정</span>
-        </button>
-      </div>
+      <span id="last-updated" class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Last updated: —</span>
     </div>
   </header>
 
@@ -140,7 +99,7 @@
       <div class="mb-5 flex items-center justify-between">
         <div>
           <h2 id="cat-title" class="text-xl text-gray-900" style="font-weight:700">경제</h2>
-          <p id="cat-subtitle" class="text-sm text-gray-400 mt-0.5">글로벌 경제 동향 실시간 AI 요약</p>
+          <p id="cat-subtitle" class="text-sm text-gray-400 mt-0.5">글로벌 경제 동향 실시간 뉴스</p>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-400">정렬:</span>
@@ -154,15 +113,12 @@
   </div>
 
   <script>
-    // ── 상수 ──────────────────────────────────────────────────────────
-    const SYSTEM_PROMPT = '너는 냉철한 투자 리스크 관리자다. 이 뉴스가 거시 경제나 산업 리스크에 미칠 영향을 중심으로 딱 3줄로 건조하게 요약해라';
-    const OPENAI_URL    = 'https://api.openai.com/v1/chat/completions';
-    const PROXY         = 'https://api.allorigins.win/raw?url=';
+    const PROXY = 'https://api.allorigins.win/raw?url=';
 
     const categoryMeta = {
-      economy: { title: '경제',       subtitle: '글로벌 경제 동향 실시간 AI 요약',     tag: '경제'  },
-      tech:    { title: '테크',       subtitle: '기술·AI 산업 핵심 이슈 실시간 AI 요약', tag: '테크'  },
-      risk:    { title: '리스크 관리', subtitle: '주요 위험 요소 실시간 AI 요약',        tag: '리스크' }
+      economy: { title: '경제',       subtitle: '글로벌 경제 동향 실시간 뉴스',     tag: '경제'  },
+      tech:    { title: '테크',       subtitle: '기술·AI 산업 핵심 이슈 실시간 뉴스', tag: '테크'  },
+      risk:    { title: '리스크 관리', subtitle: '주요 위험 요소 실시간 뉴스',        tag: '리스크' }
     };
 
     const RSS_FEEDS = {
@@ -174,31 +130,28 @@
     let currentCategory = 'economy';
     let bookmarkedIds   = new Set();
     let liveCache       = {};
-    const summaryCache  = {};  // { articleId: string[] }
 
-    // ── API Key 관리 ──────────────────────────────────────────────────
-    function getApiKey() { return localStorage.getItem('openai_api_key') || ''; }
-    function setApiKey(k) { localStorage.setItem('openai_api_key', k); }
-
-    function openSettings() {
-      document.getElementById('api-key-input').value = getApiKey();
-      document.getElementById('settings-modal').classList.remove('hidden');
-    }
-    function closeSettings() {
-      document.getElementById('settings-modal').classList.add('hidden');
-    }
-    function saveSettings() {
-      const key = document.getElementById('api-key-input').value.trim();
-      setApiKey(key);
-      closeSettings();
-      updateKeyBtnLabel();
-      // 현재 카테고리 카드 재요약
-      const articles = currentCategory ? liveCache[currentCategory] : null;
-      if (articles) autoSummarize(articles);
-    }
-    function updateKeyBtnLabel() {
-      const label = document.getElementById('ai-key-label');
-      if (label) label.textContent = getApiKey() ? 'AI Key 변경' : 'API Key 설정';
+    // ── RSS description → 요약 문장 파싱 ────────────────────────────
+    function parseDescription(raw) {
+      if (!raw) return [];
+      // HTML 태그 제거
+      const text = raw.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+      if (!text) return [];
+      // 문장 단위로 분리 (마침표/느낌표/물음표 기준)
+      const sentences = text.split(/(?<=[.!?…])\s+/).map(s => s.trim()).filter(s => s.length > 8);
+      if (sentences.length >= 2) return sentences.slice(0, 3);
+      // 문장 구분이 안 될 경우 글자 수 기준으로 분할
+      if (text.length > 60) {
+        const chunkSize = Math.ceil(text.length / 3);
+        return [
+          text.slice(0, chunkSize).trim(),
+          text.slice(chunkSize, chunkSize * 2).trim(),
+          text.slice(chunkSize * 2).trim()
+        ].filter(s => s.length > 4).slice(0, 3);
+      }
+      return [text];
     }
 
     // ── RSS fetch ─────────────────────────────────────────────────────
@@ -222,6 +175,7 @@
             time:    relativeTime(get('pubDate')),
             url,
             tag:     categoryMeta[cat].tag,
+            summary: parseDescription(get('description')),
           };
         });
 
@@ -229,142 +183,10 @@
         updateTimestamp();
         updateTabCount(cat, articles.length);
         renderCards(articles);
-        autoSummarize(articles);
 
       } catch (err) {
         console.warn('[RSS]', err);
         showError(cat);
-      }
-    }
-
-    // ── 기사 본문 fetch (allorigins 프록시) ──────────────────────────
-    async function fetchArticleBody(url) {
-      const res  = await fetch(PROXY + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
-      if (!res.ok) throw new Error(`body fetch ${res.status}`);
-      const html = await res.text();
-      const doc  = new DOMParser().parseFromString(html, 'text/html');
-      ['script','style','nav','header','footer','aside','form','iframe','noscript','figure'].forEach(tag =>
-        doc.querySelectorAll(tag).forEach(el => el.remove())
-      );
-      return (doc.body?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 2500);
-    }
-
-    // ── OpenAI API 호출 ───────────────────────────────────────────────
-    async function callOpenAI(bodyText, title) {
-      const apiKey = getApiKey();
-      if (!apiKey) throw Object.assign(new Error('NO_KEY'));
-
-      const res = await fetch(OPENAI_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user',   content: `제목: ${title}\n\n본문:\n${bodyText}` }
-          ],
-          max_tokens: 400,
-          temperature: 0.3
-        }),
-        signal: AbortSignal.timeout(20000)
-      });
-
-      if (res.status === 401) throw new Error('INVALID_KEY');
-      if (!res.ok)           throw new Error(`OPENAI_${res.status}`);
-
-      const data    = await res.json();
-      const content = data.choices?.[0]?.message?.content?.trim() || '';
-      const lines   = content
-        .split('\n')
-        .map(l => l.replace(/^[\d\.\-\•\*①②③]+\s*/, '').trim())
-        .filter(l => l.length > 4)
-        .slice(0, 3);
-      if (!lines.length) throw new Error('EMPTY');
-      return lines;
-    }
-
-    // ── 카드 요약 상태 DOM 업데이트 ──────────────────────────────────
-    function setCardSummary(id, state, lines) {
-      const card = document.querySelector(`article[data-id="${id}"]`);
-      if (!card) return;
-      const ul = card.querySelector('.summary-list');
-      if (!ul) return;
-
-      if (state === 'loading') {
-        ul.innerHTML = [1,2,3].map(() => `
-          <li class="flex items-start gap-2 text-sm leading-relaxed">
-            <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 spin text-brand-500" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-            <span class="text-gray-400 italic">요약 생성 중...</span>
-          </li>`).join('');
-
-      } else if (state === 'done') {
-        ul.innerHTML = lines.map(line => `
-          <li class="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
-            <span class="mt-1.5 w-2 h-2 rounded-full bg-brand-500 flex-shrink-0"></span>
-            <span>${escHtml(line)}</span>
-          </li>`).join('');
-
-      } else if (state === 'no_key') {
-        ul.innerHTML = `
-          <li class="flex items-start gap-2 text-sm leading-relaxed">
-            <span class="mt-1.5 w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
-            <span class="text-gray-400 italic">
-              API Key를 설정하면 AI 요약이 활성화됩니다.
-              <button onclick="openSettings()" class="text-brand-500 underline ml-1 hover:text-brand-600">설정하기 →</button>
-            </span>
-          </li>`;
-
-      } else if (state === 'error') {
-        ul.innerHTML = `
-          <li class="flex items-start gap-2 text-sm leading-relaxed">
-            <span class="mt-1.5 w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
-            <span class="text-gray-400 italic">요약 실패.
-              <button onclick="retrySummarize('${id}')" class="text-brand-500 underline ml-1 hover:text-brand-600">다시 시도 →</button>
-            </span>
-          </li>`;
-      }
-    }
-
-    // ── 개별 카드 요약 실행 ───────────────────────────────────────────
-    async function summarizeCard(article) {
-      const { id, url, title } = article;
-      if (summaryCache[id]) { setCardSummary(id, 'done', summaryCache[id]); return; }
-      if (!getApiKey())      { setCardSummary(id, 'no_key'); return; }
-
-      setCardSummary(id, 'loading');
-      try {
-        const body  = await fetchArticleBody(url);
-        const lines = await callOpenAI(body, title);
-        summaryCache[id] = lines;
-        setCardSummary(id, 'done', lines);
-      } catch (err) {
-        console.warn('[summarize]', id, err.message);
-        if (err.message === 'INVALID_KEY') {
-          setCardSummary(id, 'error');
-          alert('OpenAI API Key가 유효하지 않습니다. 설정에서 확인해 주세요.');
-        } else if (err.message === 'NO_KEY') {
-          setCardSummary(id, 'no_key');
-        } else {
-          setCardSummary(id, 'error');
-        }
-      }
-    }
-
-    async function retrySummarize(id) {
-      const article = Object.values(liveCache).flat().find(a => a.id === id);
-      if (!article) return;
-      delete summaryCache[id];
-      await summarizeCard(article);
-    }
-
-    // 전체 카드 자동 요약 (병렬, 300ms 간격으로 요청 분산)
-    async function autoSummarize(articles) {
-      for (const article of articles) {
-        summarizeCard(article);
-        await new Promise(r => setTimeout(r, 300));
       }
     }
 
@@ -417,7 +239,6 @@
 
       if (liveCache[cat]) {
         renderCards(liveCache[cat]);
-        autoSummarize(liveCache[cat]);
       } else {
         fetchNews(cat);
       }
@@ -435,7 +256,6 @@
       });
       currentCategory = null;
       renderCards(saved, true);
-      autoSummarize(saved);
     }
 
     function toggleBookmark(id, btn) {
@@ -467,19 +287,15 @@
       }
       container.innerHTML = articles.map((news, idx) => {
         const bookmarked = bookmarkedIds.has(news.id);
-        const hasCached  = !!summaryCache[news.id];
-        // 캐시가 있으면 바로 렌더, 없으면 spinner 초기 상태
-        const summaryHtml = hasCached
-          ? summaryCache[news.id].map(line => `
-              <li class="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
-                <span class="mt-1.5 w-2 h-2 rounded-full bg-brand-500 flex-shrink-0"></span>
-                <span>${escHtml(line)}</span>
-              </li>`).join('')
-          : [1,2,3].map(() => `
-              <li class="flex items-start gap-2 text-sm leading-relaxed">
-                <span class="mt-1.5 w-2 h-2 rounded-full bg-gray-200 flex-shrink-0"></span>
-                <span class="text-gray-300 italic">AI가 요약 중입니다...</span>
-              </li>`).join('');
+        const summaryLines = news.summary && news.summary.length
+          ? news.summary
+          : ['요약 정보를 불러올 수 없습니다.'];
+
+        const summaryHtml = summaryLines.map(line => `
+          <li class="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
+            <span class="mt-1.5 w-2 h-2 rounded-full bg-brand-500 flex-shrink-0"></span>
+            <span>${escHtml(line)}</span>
+          </li>`).join('');
 
         return `
         <article data-id="${news.id}" class="bg-white rounded-xl border border-gray-200 p-6 card-hover"
@@ -498,9 +314,9 @@
                   <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                   <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                 </svg>
-                AI 3줄 요약 · 투자 리스크 관점
+                뉴스 요약
               </p>
-              <ul class="summary-list space-y-1.5">${summaryHtml}</ul>
+              <ul class="space-y-1.5">${summaryHtml}</ul>
             </div>
             <div class="flex items-center gap-3">
               <a href="${escAttr(news.url)}" target="_blank" rel="noopener noreferrer"
@@ -559,7 +375,6 @@
     }
 
     // ── 초기화 ────────────────────────────────────────────────────────
-    updateKeyBtnLabel();
     fetchNews('economy');
   </script>
 </body>
