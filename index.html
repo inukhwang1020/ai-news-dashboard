@@ -10,10 +10,8 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            brand: { 50:'#f0f4ff', 100:'#e0eaff', 500:'#3b5bdb', 600:'#2f4ac4', 700:'#2340ae' }
-          },
-          fontFamily: { sans: ['"Noto Sans KR"', 'ui-sans-serif', 'system-ui', 'sans-serif'] }
+          colors: { brand: { 50:'#f0f4ff',100:'#e0eaff',500:'#3b5bdb',600:'#2f4ac4',700:'#2340ae' } },
+          fontFamily: { sans: ['"Noto Sans KR"','ui-sans-serif','system-ui','sans-serif'] }
         }
       }
     }
@@ -21,21 +19,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Noto Sans KR', sans-serif; }
-    .card-hover { transition: box-shadow 0.2s ease, transform 0.2s ease; }
-    .card-hover:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.09); transform: translateY(-2px); }
-    .tab-active   { border-left: 3px solid #3b5bdb; background: #f0f4ff; color: #3b5bdb; font-weight: 600; }
-    .tab-inactive { border-left: 3px solid transparent; color: #6b7280; }
-    .tab-inactive:hover { background: #f9fafb; color: #374151; }
-    .bookmark-active   { color: #3b5bdb; }
-    .bookmark-inactive { color: #9ca3af; }
-    .archive-date { cursor: pointer; transition: background 0.15s; }
-    .archive-date:hover { background: #f9fafb; }
-    .archive-date.open { background: #f0f4ff; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    body { font-family:'Noto Sans KR',sans-serif; }
+    .card-hover { transition:box-shadow .2s ease,transform .2s ease; }
+    .card-hover:hover { box-shadow:0 8px 24px rgba(0,0,0,.09); transform:translateY(-2px); }
+    .tab-active   { border-left:3px solid #3b5bdb; background:#f0f4ff; color:#3b5bdb; font-weight:600; }
+    .tab-inactive { border-left:3px solid transparent; color:#6b7280; }
+    .tab-inactive:hover { background:#f9fafb; color:#374151; }
+    .bookmark-active   { color:#3b5bdb; }
+    .bookmark-inactive { color:#9ca3af; }
+    .disc-tab-active   { background:#f0f4ff; color:#3b5bdb; border-color:#3b5bdb; font-weight:600; }
+    .disc-tab-inactive { background:white; color:#6b7280; border-color:#e5e7eb; }
+    .disc-tab-inactive:hover { background:#f9fafb; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:#f1f5f9} ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -80,14 +76,15 @@
             <span class="text-lg">🛡️</span><span>리스크 관리</span>
             <span class="ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full" style="font-weight:500"><span class="tab-count">-</span></span>
           </button>
-          <button onclick="switchCategory('discussion')" data-cat="discussion"
-            class="tab-inactive w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3">
-            <span class="text-lg">💬</span><span>토론 게시판</span>
-            <span class="ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full" style="font-weight:500"><span class="tab-count">-</span></span>
-          </button>
+          <!-- 아카이브가 토론 게시판 위 -->
           <button onclick="switchCategory('archive')" data-cat="archive"
             class="tab-inactive w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3">
             <span class="text-lg">📁</span><span>아카이브</span>
+            <span class="ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full" style="font-weight:500"><span class="tab-count">-</span></span>
+          </button>
+          <button onclick="switchCategory('discussion')" data-cat="discussion"
+            class="tab-inactive w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3">
+            <span class="text-lg">💬</span><span>토론 게시판</span>
             <span class="ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full" style="font-weight:500"><span class="tab-count">-</span></span>
           </button>
         </nav>
@@ -128,24 +125,25 @@
 
     const PROXY = 'https://api.allorigins.win/raw?url=';
     const categoryMeta = {
-      economy:    { title: '경제',        subtitle: '글로벌 경제 동향 실시간 뉴스',       tag: '경제'  },
-      tech:       { title: '테크',        subtitle: '기술·AI 산업 핵심 이슈 실시간 뉴스',  tag: '테크'  },
-      risk:       { title: '리스크 관리',  subtitle: '주요 위험 요소 실시간 뉴스',          tag: '리스크' },
-      discussion: { title: '토론 게시판', subtitle: '뉴스에 대한 의견을 나눠보세요',        tag: '토론'  },
-      archive:    { title: '뉴스 아카이브', subtitle: '날짜/시간별 저장된 뉴스 조회',       tag: '아카이브' }
+      economy:    { title:'경제',        subtitle:'글로벌 경제 동향 실시간 뉴스',       tag:'경제'   },
+      tech:       { title:'테크',        subtitle:'기술·AI 산업 핵심 이슈 실시간 뉴스',  tag:'테크'   },
+      risk:       { title:'리스크 관리',  subtitle:'주요 위험 요소 실시간 뉴스',          tag:'리스크' },
+      archive:    { title:'뉴스 아카이브',subtitle:'날짜/시간별 저장된 뉴스 조회',        tag:'아카이브'},
+      discussion: { title:'토론 게시판', subtitle:'뉴스에 대한 의견을 나눠보세요',        tag:'토론'   }
     };
     const RSS_FEEDS = {
-      economy: 'https://rss.donga.com/economy.xml',
-      tech:    'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=07',
-      risk:    'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=03'
+      economy:'https://rss.donga.com/economy.xml',
+      tech:'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=07',
+      risk:'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=03'
     };
     const CAT_LABELS = { economy:'경제', tech:'테크', risk:'리스크 관리' };
     const CAT_ICONS  = { economy:'📈', tech:'💡', risk:'🛡️' };
 
-    let currentCategory = 'economy';
-    let bookmarkedIds   = new Set();
-    let liveCache       = {};
-    let archiveState    = { view: 'dates', openDate: null };
+    let currentCategory    = 'economy';
+    let bookmarkedIds      = new Set();
+    let liveCache          = {};
+    let archiveState       = { openDate: null };
+    let articleContext     = null; // 아카이브에서 토론으로 넘어올 때 설정
 
     // ── RSS 파싱 ──────────────────────────────────────────────────────
     function decodeHtmlEntities(str) {
@@ -153,14 +151,14 @@
     }
     function parseDescription(raw) {
       if (!raw) return [];
-      const stripped = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      const text = decodeHtmlEntities(stripped).replace(/^[▲△▶◆■●※\s]+/, '').replace(/\s+/g, ' ').trim();
+      const stripped = raw.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+      const text = decodeHtmlEntities(stripped).replace(/^[▲△▶◆■●※\s]+/,'').replace(/\s+/g,' ').trim();
       if (!text) return [];
-      const sentences = text.split(/(?<=[.!?…])\s+/).map(s => s.trim()).filter(s => s.length > 8);
-      if (sentences.length >= 2) return sentences.slice(0, 3);
-      if (text.length > 40) {
-        const words = text.split(' '), third = Math.ceil(words.length / 3);
-        return [words.slice(0, third).join(' '), words.slice(third, third*2).join(' '), words.slice(third*2).join(' ')].filter(s => s.length > 4).slice(0, 3);
+      const sentences = text.split(/(?<=[.!?…])\s+/).map(s=>s.trim()).filter(s=>s.length>8);
+      if (sentences.length>=2) return sentences.slice(0,3);
+      if (text.length>40) {
+        const words=text.split(' '), third=Math.ceil(words.length/3);
+        return [words.slice(0,third).join(' '),words.slice(third,third*2).join(' '),words.slice(third*2).join(' ')].filter(s=>s.length>4).slice(0,3);
       }
       return [text];
     }
@@ -172,206 +170,154 @@
         const res  = await fetch(PROXY + encodeURIComponent(RSS_FEEDS[cat]));
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const text = await res.text();
-        const doc  = new DOMParser().parseFromString(text, 'text/xml');
-        const items = [...doc.querySelectorAll('item')].slice(0, 5);
+        const doc  = new DOMParser().parseFromString(text,'text/xml');
+        const items = [...doc.querySelectorAll('item')].slice(0,5);
         if (!items.length) throw new Error('No items');
-
-        const articles = items.map((item, idx) => {
-          const get = tag => { const el = item.querySelector(tag); return el ? el.textContent.trim() : ''; };
-          const url = get('link') || get('guid');
+        const articles = items.map((item,idx) => {
+          const get = tag => { const el=item.querySelector(tag); return el?el.textContent.trim():''; };
+          const url = get('link')||get('guid');
           return { id:`${cat}_${idx}`, title:get('title'), source:extractDomain(url||RSS_FEEDS[cat]),
                    time:relativeTime(get('pubDate')), url, tag:categoryMeta[cat].tag, summary:parseDescription(get('description')) };
         });
-
         liveCache[cat] = articles;
-        updateTimestamp();
-        updateTabCount(cat, articles.length);
-        renderCards(articles);
-
-        // 아카이브 백그라운드 저장
-        saveToArchive(articles, cat);
-
-      } catch (err) {
-        console.warn('[RSS]', err);
-        showError(cat);
-      }
+        updateTimestamp(); updateTabCount(cat,articles.length); renderCards(articles);
+        saveToArchive(articles,cat);
+      } catch(err) { console.warn('[RSS]',err); showError(cat); }
     }
 
-    // ── 아카이브 저장 ─────────────────────────────────────────────────
     async function saveToArchive(articles, cat) {
       const batchId = crypto.randomUUID();
-      const rows = articles.map(a => ({
-        batch_id: batchId,
-        category: cat,
-        title: a.title,
-        source: a.source || '',
-        url: a.url || '',
-        summary: a.summary || [],
-        tag: a.tag || '',
-      }));
-      const { error } = await sb.from('news_archive').insert(rows);
-      if (error) console.warn('[Archive]', error.message);
+      const { error } = await sb.from('news_archive').insert(
+        articles.map(a => ({ batch_id:batchId, category:cat, title:a.title, source:a.source||'', url:a.url||'', summary:a.summary||[], tag:a.tag||'' }))
+      );
+      if (error) console.warn('[Archive]',error.message);
     }
 
-    // ── 아카이브 조회 ─────────────────────────────────────────────────
+    // ── 카테고리 전환 ─────────────────────────────────────────────────
+    function switchCategory(cat, ctx = null) {
+      currentCategory = cat;
+      document.querySelectorAll('#category-nav button[data-cat]').forEach(btn => {
+        const active = btn.dataset.cat === cat;
+        btn.className = `${active?'tab-active':'tab-inactive'} w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3`;
+        const badge = btn.querySelector('.ml-auto');
+        if (badge) badge.className = `ml-auto text-xs ${active?'bg-brand-100 text-brand-500':'bg-gray-100 text-gray-400'} px-2 py-0.5 rounded-full`;
+      });
+      document.getElementById('cat-title').textContent    = categoryMeta[cat].title;
+      document.getElementById('cat-subtitle').textContent = categoryMeta[cat].subtitle;
+      document.getElementById('sort-control').style.display = (cat==='discussion'||cat==='archive') ? 'none' : 'flex';
+
+      if (cat==='discussion') {
+        articleContext = ctx;
+        fetchDiscussions();
+      } else if (cat==='archive') {
+        archiveState = { openDate: null };
+        fetchArchive();
+      } else if (liveCache[cat]) {
+        renderCards(liveCache[cat]);
+      } else {
+        fetchNews(cat);
+      }
+    }
+
+    // ── 아카이브 ──────────────────────────────────────────────────────
     async function fetchArchive() {
       const container = document.getElementById('news-container');
-      container.innerHTML = skeletonArchive();
+      container.innerHTML = skeletonList();
+      const { data, error } = await sb.from('news_archive')
+        .select('id,batch_id,category,saved_at').order('saved_at',{ascending:false}).limit(1000);
+      if (error) { container.innerHTML = errorBox(error.message); return; }
 
-      const { data, error } = await sb
-        .from('news_archive')
-        .select('id, batch_id, category, saved_at')
-        .order('saved_at', { ascending: false })
-        .limit(1000);
-
-      if (error) {
-        container.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
-          <div class="text-4xl mb-3">⚠️</div>
-          <p class="text-sm text-gray-500">${escHtml(error.message)}</p></div>`;
-        return;
-      }
-
-      // batch별 집계
       const batchMap = {};
       data.forEach(row => {
-        if (!batchMap[row.batch_id]) {
-          batchMap[row.batch_id] = { batch_id: row.batch_id, category: row.category, saved_at: row.saved_at, count: 0 };
-        }
+        if (!batchMap[row.batch_id]) batchMap[row.batch_id] = { batch_id:row.batch_id, category:row.category, saved_at:row.saved_at, count:0 };
         batchMap[row.batch_id].count++;
       });
-
-      // 날짜별 그룹
       const byDate = {};
       Object.values(batchMap).forEach(b => {
-        const kst = toKST(b.saved_at);
-        const date = kst.slice(0, 10);
+        const kst  = toKST(b.saved_at);
+        const date = kst.slice(0,10);
         if (!byDate[date]) byDate[date] = [];
-        byDate[date].push({ ...b, kst });
+        byDate[date].push({...b, kst});
       });
-
       updateTabCount('archive', Object.keys(batchMap).length);
-
-      if (archiveState.openDate && byDate[archiveState.openDate]) {
-        renderArchiveDates(byDate, archiveState.openDate);
-      } else {
-        renderArchiveDates(byDate, null);
-      }
+      renderArchiveDates(byDate);
     }
 
-    function renderArchiveDates(byDate, openDate) {
+    function renderArchiveDates(byDate) {
       const container = document.getElementById('news-container');
-      const dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a));
-
+      const dates = Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
       if (!dates.length) {
         container.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
           <div class="text-4xl mb-3">📭</div>
           <p class="text-gray-400 text-sm">저장된 뉴스가 없습니다.<br>뉴스 탭을 클릭하면 자동으로 저장됩니다.</p></div>`;
         return;
       }
-
-      container.innerHTML = dates.map((date, di) => {
-        const batches = byDate[date].sort((a,b) => b.saved_at.localeCompare(a.saved_at));
-        const isOpen  = date === openDate;
-        const total   = batches.reduce((s,b) => s+b.count, 0);
-
-        const batchRows = batches.map(b => {
-          const time = b.kst.slice(11, 16);
-          const label = CAT_LABELS[b.category] || b.category;
-          const icon  = CAT_ICONS[b.category]  || '📰';
-          return `
-            <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 cursor-pointer transition border-b border-gray-50 last:border-0"
-              onclick="loadBatch('${b.batch_id}', '${escAttr(date)}')">
-              <span class="text-xs text-gray-400 w-12 flex-shrink-0">${time}</span>
-              <span class="text-base">${icon}</span>
-              <span class="text-sm text-gray-700" style="font-weight:500">${escHtml(label)}</span>
-              <span class="ml-auto text-xs text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full" style="font-weight:600">${b.count}건</span>
-              <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>`;
-        }).join('');
-
+      container.innerHTML = dates.map((date,di) => {
+        const batches = byDate[date].sort((a,b)=>b.saved_at.localeCompare(a.saved_at));
+        const isOpen  = date === archiveState.openDate;
+        const total   = batches.reduce((s,b)=>s+b.count,0);
+        const rows    = batches.map(b => `
+          <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 cursor-pointer transition border-b border-gray-50 last:border-0"
+            onclick="loadBatch('${b.batch_id}','${escAttr(date)}')">
+            <span class="text-xs text-gray-400 w-12 flex-shrink-0">${b.kst.slice(11,16)}</span>
+            <span class="text-base">${CAT_ICONS[b.category]||'📰'}</span>
+            <span class="text-sm text-gray-700" style="font-weight:500">${escHtml(CAT_LABELS[b.category]||b.category)}</span>
+            <span class="ml-auto text-xs text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full" style="font-weight:600">${b.count}건</span>
+            <svg class="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>`).join('');
         return `
           <div class="bg-white rounded-xl border border-gray-200 overflow-hidden"
-            style="animation: fadeIn 0.2s ease both; animation-delay: ${di * 0.05}s">
-            <div class="archive-date ${isOpen ? 'open' : ''} flex items-center gap-3 px-5 py-4 border-b border-gray-100"
-              onclick="toggleArchiveDate('${date}')">
-              <svg class="w-4 h-4 text-brand-500 flex-shrink-0 transition-transform ${isOpen ? 'rotate-90' : ''}"
-                style="transition:transform 0.2s" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            style="animation:fadeIn .2s ease both;animation-delay:${di*.05}s">
+            <div class="flex items-center gap-3 px-5 py-4 cursor-pointer hover:bg-gray-50 transition border-b border-gray-100"
+              onclick="toggleDate('${date}')">
+              <svg class="w-4 h-4 text-brand-500 flex-shrink-0 transition-transform ${isOpen?'rotate-90':''}"
+                style="transition:transform .2s" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
               </svg>
               <span class="text-sm text-gray-800" style="font-weight:700">📅 ${escHtml(date)}</span>
               <span class="text-xs text-gray-400 ml-1">(${batches.length}회 수집 · ${total}건)</span>
             </div>
-            ${isOpen ? `<div class="divide-y divide-gray-50">${batchRows}</div>` : ''}
+            ${isOpen ? `<div class="divide-y divide-gray-50">${rows}</div>` : ''}
           </div>`;
       }).join('');
     }
 
-    function toggleArchiveDate(date) {
-      archiveState.openDate = archiveState.openDate === date ? null : date;
+    function toggleDate(date) {
+      archiveState.openDate = archiveState.openDate===date ? null : date;
       fetchArchive();
     }
 
     async function loadBatch(batchId, date) {
       archiveState.openDate = date;
       const container = document.getElementById('news-container');
-      container.innerHTML = `
-        <div class="flex items-center gap-2 mb-2">
-          <button onclick="fetchArchive()" class="text-xs text-brand-500 hover:underline flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-            아카이브 목록으로
-          </button>
-        </div>
-        ${skeletonArchive()}`;
-
-      const { data, error } = await sb
-        .from('news_archive')
-        .select('*')
-        .eq('batch_id', batchId)
-        .order('id');
-
-      if (error || !data?.length) {
-        container.innerHTML = `<button onclick="fetchArchive()" class="text-xs text-brand-500 hover:underline mb-4 flex items-center gap-1">← 아카이브 목록으로</button>
-          <div class="bg-white rounded-xl border p-16 text-center text-gray-400 text-sm">기사를 불러오지 못했습니다.</div>`;
+      container.innerHTML = backBtn('fetchArchive()') + skeletonList();
+      const { data, error } = await sb.from('news_archive').select('*').eq('batch_id',batchId).order('id');
+      if (error||!data?.length) {
+        container.innerHTML = backBtn('fetchArchive()') + errorBox('기사를 불러오지 못했습니다.');
         return;
       }
-
       const kst   = toKST(data[0].saved_at);
-      const label = CAT_LABELS[data[0].category] || data[0].category;
-      const icon  = CAT_ICONS[data[0].category]  || '📰';
-
+      const label = CAT_LABELS[data[0].category]||data[0].category;
+      const icon  = CAT_ICONS[data[0].category]||'📰';
       container.innerHTML = `
         <div class="flex items-center gap-2 mb-4">
-          <button onclick="fetchArchive()" class="text-xs text-brand-500 hover:underline flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-            아카이브 목록으로
-          </button>
+          ${backBtn('fetchArchive()')}
           <span class="text-gray-300 text-xs">|</span>
           <span class="text-xs text-gray-500">${icon} ${escHtml(label)} · ${escHtml(kst.slice(0,16).replace('T',' '))}</span>
         </div>
         <div class="flex flex-col gap-4">
-          ${data.map((item, idx) => renderArchiveCard(item, idx)).join('')}
+          ${data.map((item,idx) => archiveCard(item,idx)).join('')}
         </div>`;
     }
 
-    function renderArchiveCard(item, idx) {
-      const summary = Array.isArray(item.summary) ? item.summary : (item.summary || []);
-      const summaryHtml = summary.length
-        ? summary.map(line => `
-            <li class="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
-              <span class="mt-1.5 w-2 h-2 rounded-full bg-brand-500 flex-shrink-0"></span>
-              <span>${escHtml(line)}</span>
-            </li>`).join('')
-        : `<li class="text-sm text-gray-400">요약 정보 없음</li>`;
-
+    function archiveCard(item, idx) {
+      const summary = Array.isArray(item.summary) ? item.summary : [];
+      const lines   = summary.length ? summary : ['요약 정보 없음'];
       return `
         <article class="bg-white rounded-xl border border-gray-200 p-6 card-hover"
-          style="animation: fadeIn 0.2s ease both; animation-delay: ${idx * 0.06}s">
+          style="animation:fadeIn .2s ease both;animation-delay:${idx*.06}s">
           <div class="flex items-center gap-2 mb-2 flex-wrap">
             <span class="text-xs text-brand-500 bg-brand-50 px-2 py-0.5 rounded-md" style="font-weight:600">${escHtml(item.tag||'')}</span>
             <span class="text-xs text-gray-400">${escHtml(item.source||'')}</span>
@@ -382,80 +328,88 @@
               <svg class="w-3.5 h-3.5 text-brand-500" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-              </svg>
-              뉴스 요약
+              </svg>뉴스 요약
             </p>
-            <ul class="space-y-1.5">${summaryHtml}</ul>
+            <ul class="space-y-1.5">${lines.map(l=>`
+              <li class="flex items-start gap-2 text-sm text-gray-700 leading-relaxed">
+                <span class="mt-1.5 w-2 h-2 rounded-full bg-brand-500 flex-shrink-0"></span>
+                <span>${escHtml(l)}</span>
+              </li>`).join('')}</ul>
           </div>
-          ${item.url ? `
-          <a href="${escAttr(item.url)}" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 text-xs text-white bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg transition" style="font-weight:600">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-            </svg>
-            원본 기사 보기
-          </a>` : ''}
+          <div class="flex items-center gap-2 flex-wrap">
+            ${item.url ? `
+            <a href="${escAttr(item.url)}" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-xs text-white bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg transition" style="font-weight:600">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>원본 기사 보기
+            </a>` : ''}
+            <button onclick='openDiscussion(${JSON.stringify(item.title)}, ${JSON.stringify(item.url||"")})'
+              class="inline-flex items-center gap-1.5 text-xs text-brand-500 border border-brand-500 hover:bg-brand-50 px-4 py-2 rounded-lg transition" style="font-weight:600">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>이 기사 토론하기
+            </button>
+          </div>
         </article>`;
     }
 
-    function skeletonArchive() {
-      return Array(3).fill(0).map(() => `
-        <div class="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
-          <div class="flex items-center gap-3">
-            <div class="w-4 h-4 bg-gray-200 rounded"></div>
-            <div class="h-4 w-32 bg-gray-200 rounded"></div>
-            <div class="h-3 w-24 bg-gray-100 rounded ml-2"></div>
-          </div>
-        </div>`).join('');
-    }
-
-    // ── 카테고리 전환 ─────────────────────────────────────────────────
-    function switchCategory(cat) {
-      currentCategory = cat;
-      document.querySelectorAll('#category-nav button[data-cat]').forEach(btn => {
-        const active = btn.dataset.cat === cat;
-        btn.className = `${active ? 'tab-active' : 'tab-inactive'} w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3`;
-        const badge = btn.querySelector('.ml-auto');
-        if (badge) badge.className = `ml-auto text-xs ${active ? 'bg-brand-100 text-brand-500' : 'bg-gray-100 text-gray-400'} px-2 py-0.5 rounded-full`;
-      });
-      document.getElementById('cat-title').textContent    = categoryMeta[cat].title;
-      document.getElementById('cat-subtitle').textContent = categoryMeta[cat].subtitle;
-      document.getElementById('sort-control').style.display = (cat === 'discussion' || cat === 'archive') ? 'none' : 'flex';
-
-      if (cat === 'discussion') {
-        fetchDiscussions();
-      } else if (cat === 'archive') {
-        archiveState = { view: 'dates', openDate: null };
-        fetchArchive();
-      } else if (liveCache[cat]) {
-        renderCards(liveCache[cat]);
-      } else {
-        fetchNews(cat);
-      }
+    function openDiscussion(title, url) {
+      switchCategory('discussion', { title, url });
     }
 
     // ── 토론 게시판 ───────────────────────────────────────────────────
     async function fetchDiscussions() {
       const container = document.getElementById('news-container');
-      container.innerHTML = discussionFormHtml() + `<div id="disc-list" class="flex flex-col gap-3">${skeletonDisc()}</div>`;
+      container.innerHTML = discussionFormHtml() + `<div id="disc-list" class="flex flex-col gap-3">${skeletonList(3)}</div>`;
       const textarea = document.getElementById('disc-content');
       if (textarea) textarea.addEventListener('input', () => {
-        const c = document.getElementById('disc-char-count'); if(c) c.textContent = `${textarea.value.length} / 500`;
+        const c = document.getElementById('disc-char-count'); if(c) c.textContent=`${textarea.value.length} / 500`;
       });
-      const { data, error } = await sb.from('discussions').select('*').order('created_at', { ascending: false }).limit(50);
+
+      let query = sb.from('discussions').select('*').order('created_at',{ascending:false}).limit(50);
+      if (articleContext) query = query.eq('news_title', articleContext.title);
+      const { data, error } = await query;
+
       if (error) {
-        document.getElementById('disc-list').innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
-          <div class="text-4xl mb-3">⚠️</div><p class="text-sm text-gray-400">${escHtml(error.message)}</p></div>`;
-        return;
+        document.getElementById('disc-list').innerHTML = errorBox(error.message); return;
       }
       updateTabCount('discussion', data.length);
       renderDiscussions(data);
     }
 
     function discussionFormHtml() {
+      const articleBanner = articleContext ? `
+        <div class="flex items-start gap-3 bg-brand-50 border border-brand-100 rounded-lg px-4 py-3 mb-4">
+          <svg class="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+          </svg>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs text-brand-500 mb-0.5" style="font-weight:600">연결된 기사</p>
+            <p class="text-sm text-gray-700 leading-snug" style="font-weight:500">${escHtml(articleContext.title)}</p>
+          </div>
+          <button onclick="clearArticleContext()" class="text-gray-400 hover:text-gray-600 flex-shrink-0" title="연결 해제">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>` : '';
+
+      const tabBtns = articleContext ? `
+        <div class="flex gap-2 mb-4">
+          <button onclick="filterDiscussion('article')" id="tab-article"
+            class="disc-tab-active text-xs px-3 py-1.5 rounded-lg border transition">이 기사 토론</button>
+          <button onclick="filterDiscussion('all')" id="tab-all"
+            class="disc-tab-inactive text-xs px-3 py-1.5 rounded-lg border transition">전체 토론 보기</button>
+        </div>` : '';
+
       return `
         <div class="bg-white rounded-xl border border-gray-200 p-6 mb-4">
+          ${articleBanner}
+          ${tabBtns}
           <h3 class="text-sm text-gray-700 mb-4 flex items-center gap-2" style="font-weight:600">
             <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -464,7 +418,7 @@
           </h3>
           <div class="flex flex-col gap-3">
             <input id="disc-nickname" type="text" maxlength="20" placeholder="닉네임 (최대 20자)"
-              class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder-gray-300" />
+              class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder-gray-300"/>
             <textarea id="disc-content" maxlength="500" rows="3" placeholder="의견을 입력하세요 (최대 500자)"
               class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 placeholder-gray-300 resize-none"></textarea>
             <div class="flex justify-between items-center">
@@ -476,43 +430,66 @@
         </div>`;
     }
 
-    function skeletonDisc() {
-      return Array(3).fill(0).map(() => `
-        <div class="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-9 h-9 rounded-full bg-gray-200 flex-shrink-0"></div>
-            <div class="h-4 w-24 bg-gray-200 rounded"></div>
-          </div>
-          <div class="h-4 w-full bg-gray-100 rounded mb-2"></div>
-          <div class="h-4 w-3/4 bg-gray-100 rounded"></div>
-        </div>`).join('');
+    function clearArticleContext() {
+      articleContext = null;
+      fetchDiscussions();
+    }
+
+    function filterDiscussion(mode) {
+      document.getElementById('tab-article')?.classList.replace(
+        mode==='article' ? 'disc-tab-inactive':'disc-tab-active',
+        mode==='article' ? 'disc-tab-active':'disc-tab-inactive');
+      document.getElementById('tab-all')?.classList.replace(
+        mode==='all' ? 'disc-tab-inactive':'disc-tab-active',
+        mode==='all' ? 'disc-tab-active':'disc-tab-inactive');
+
+      const list = document.getElementById('disc-list');
+      if (!list) return;
+      list.innerHTML = skeletonList(3);
+      let query = sb.from('discussions').select('*').order('created_at',{ascending:false}).limit(50);
+      if (mode==='article' && articleContext) query = query.eq('news_title', articleContext.title);
+      query.then(({ data, error }) => {
+        if (error) { list.innerHTML = errorBox(error.message); return; }
+        updateTabCount('discussion', data.length);
+        renderDiscussions(data);
+      });
     }
 
     function renderDiscussions(posts) {
-      const list = document.getElementById('disc-list'); if (!list) return;
+      const list = document.getElementById('disc-list'); if(!list) return;
       if (!posts?.length) {
         list.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
           <div class="text-4xl mb-3">💬</div>
-          <p class="text-gray-400 text-sm">첫 번째 게시글을 작성해보세요!</p></div>`;
+          <p class="text-gray-400 text-sm">${articleContext ? '이 기사에 대한 토론이 없습니다.<br>첫 번째 의견을 남겨보세요!' : '첫 번째 게시글을 작성해보세요!'}</p>
+        </div>`;
         return;
       }
       const colors = ['#3b5bdb','#0ca678','#f76707','#e03131','#7048e8','#1098ad','#d6336c'];
-      list.innerHTML = posts.map((p, i) => {
+      list.innerHTML = posts.map((p,i) => {
         const liked = likedPosts.has(p.id);
         const color = colors[p.nickname.charCodeAt(0) % colors.length];
+        const articleTag = p.news_title ? `
+          <div class="mb-2 flex items-center gap-1.5">
+            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+            <span class="text-xs text-gray-400 truncate max-w-xs">${escHtml(p.news_title)}</span>
+          </div>` : '';
         return `
           <article class="bg-white rounded-xl border border-gray-200 p-5 card-hover"
-            style="animation: fadeIn 0.25s ease both; animation-delay: ${i*0.05}s">
+            style="animation:fadeIn .25s ease both;animation-delay:${i*.05}s">
+            ${articleTag}
             <div class="flex items-center gap-3 mb-3">
               <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0"
-                style="background:${color}; font-weight:700">${escHtml(p.nickname[0].toUpperCase())}</div>
+                style="background:${color};font-weight:700">${escHtml(p.nickname[0].toUpperCase())}</div>
               <div>
                 <span class="text-sm text-gray-800" style="font-weight:600">${escHtml(p.nickname)}</span>
                 <span class="text-xs text-gray-400 ml-2">${relativeTime(p.created_at)}</span>
               </div>
-              <button onclick="toggleDiscLike('${p.id}', this)" data-likes="${p.likes||0}"
+              <button onclick="toggleDiscLike('${p.id}',this)" data-likes="${p.likes||0}"
                 class="ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition
-                  ${liked ? 'border-brand-500 text-brand-500 bg-brand-50' : 'border-gray-200 text-gray-400 hover:border-brand-500 hover:text-brand-500'}">
+                  ${liked?'border-brand-500 text-brand-500 bg-brand-50':'border-gray-200 text-gray-400 hover:border-brand-500 hover:text-brand-500'}">
                 <svg class="w-3.5 h-3.5" fill="${liked?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -532,38 +509,43 @@
       if (!content)  { alert('내용을 입력해주세요.'); return; }
       const btn = document.querySelector('[onclick="submitDiscussion()"]');
       if (btn) { btn.disabled=true; btn.textContent='게시 중...'; }
-      const { error } = await sb.from('discussions').insert({ nickname, content, likes:0 });
+      const payload = { nickname, content, likes:0 };
+      if (articleContext) { payload.news_title=articleContext.title; payload.news_url=articleContext.url||''; }
+      const { error } = await sb.from('discussions').insert(payload);
       if (error) { alert('게시 실패: '+error.message); if(btn){btn.disabled=false;btn.textContent='게시하기';} }
       else await fetchDiscussions();
     }
 
     async function toggleDiscLike(id, btn) {
       if (likedPosts.has(id)) return;
-      likedPosts.add(id); localStorage.setItem('likedPosts', JSON.stringify([...likedPosts]));
-      const countEl = btn.querySelector('.like-count');
-      const newCount = parseInt(btn.dataset.likes||'0')+1;
-      if (countEl) countEl.textContent = newCount;
-      btn.dataset.likes = newCount;
+      likedPosts.add(id); localStorage.setItem('likedPosts',JSON.stringify([...likedPosts]));
+      const countEl=btn.querySelector('.like-count'), newCount=parseInt(btn.dataset.likes||'0')+1;
+      if(countEl) countEl.textContent=newCount; btn.dataset.likes=newCount;
       btn.classList.remove('border-gray-200','text-gray-400');
       btn.classList.add('border-brand-500','text-brand-500','bg-brand-50');
       btn.querySelector('svg').setAttribute('fill','currentColor');
-      await sb.from('discussions').update({ likes:newCount }).eq('id',id);
+      await sb.from('discussions').update({likes:newCount}).eq('id',id);
     }
 
     // ── 뉴스 카드 ─────────────────────────────────────────────────────
     function showSkeleton() {
-      document.getElementById('news-container').innerHTML =
-        Array(5).fill(0).map(()=>`
-          <div class="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
-            <div class="flex gap-2 mb-3"><div class="h-5 w-14 bg-gray-200 rounded-md"></div><div class="h-5 w-24 bg-gray-100 rounded-md"></div></div>
-            <div class="h-5 w-full bg-gray-200 rounded mb-2"></div>
-            <div class="h-5 w-4/5 bg-gray-200 rounded mb-4"></div>
-            <div class="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100 space-y-2">
-              <div class="h-3 w-20 bg-gray-200 rounded mb-3"></div>
-              <div class="h-4 w-full bg-gray-100 rounded"></div><div class="h-4 w-full bg-gray-100 rounded"></div><div class="h-4 w-3/4 bg-gray-100 rounded"></div>
-            </div>
-            <div class="flex gap-3"><div class="h-8 w-28 bg-gray-200 rounded-lg"></div><div class="h-8 w-20 bg-gray-100 rounded-lg"></div></div>
-          </div>`).join('');
+      document.getElementById('news-container').innerHTML = skeletonList(5, true);
+    }
+    function skeletonList(n=3, isNews=false) {
+      if (isNews) return Array(n).fill(0).map(()=>`
+        <div class="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+          <div class="flex gap-2 mb-3"><div class="h-5 w-14 bg-gray-200 rounded-md"></div><div class="h-5 w-24 bg-gray-100 rounded-md"></div></div>
+          <div class="h-5 w-full bg-gray-200 rounded mb-2"></div><div class="h-5 w-4/5 bg-gray-200 rounded mb-4"></div>
+          <div class="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100 space-y-2">
+            <div class="h-3 w-20 bg-gray-200 rounded mb-3"></div>
+            <div class="h-4 w-full bg-gray-100 rounded"></div><div class="h-4 w-full bg-gray-100 rounded"></div><div class="h-4 w-3/4 bg-gray-100 rounded"></div>
+          </div>
+          <div class="flex gap-3"><div class="h-8 w-28 bg-gray-200 rounded-lg"></div><div class="h-8 w-20 bg-gray-100 rounded-lg"></div></div>
+        </div>`).join('');
+      return Array(n).fill(0).map(()=>`
+        <div class="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+          <div class="flex items-center gap-3"><div class="w-4 h-4 bg-gray-200 rounded"></div><div class="h-4 w-32 bg-gray-200 rounded"></div><div class="h-3 w-20 bg-gray-100 rounded ml-2"></div></div>
+        </div>`).join('');
     }
 
     function showError(cat) {
@@ -576,48 +558,54 @@
             class="text-xs text-white bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg transition">다시 시도</button>
         </div>`;
     }
+    function errorBox(msg) {
+      return `<div class="bg-white rounded-xl border border-gray-200 p-10 text-center text-sm text-gray-400">${escHtml(msg)}</div>`;
+    }
+    function backBtn(fn) {
+      return `<button onclick="${fn}" class="text-xs text-brand-500 hover:underline flex items-center gap-1 mb-2">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>아카이브 목록으로
+      </button>`;
+    }
 
     function showBookmarks() {
-      const saved = Object.values(liveCache).flat().filter(n => bookmarkedIds.has(n.id));
+      const saved = Object.values(liveCache).flat().filter(n=>bookmarkedIds.has(n.id));
       document.getElementById('cat-title').textContent    = '북마크';
       document.getElementById('cat-subtitle').textContent = '저장한 뉴스 모아보기';
-      document.querySelectorAll('#category-nav button[data-cat]').forEach(btn => {
-        btn.className = 'tab-inactive w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3';
-        const badge = btn.querySelector('.ml-auto'); if(badge) badge.className='ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full';
+      document.querySelectorAll('#category-nav button[data-cat]').forEach(btn=>{
+        btn.className='tab-inactive w-full text-left px-4 py-3 text-sm transition-all flex items-center gap-3';
+        const badge=btn.querySelector('.ml-auto'); if(badge) badge.className='ml-auto text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full';
       });
-      currentCategory = null;
-      document.getElementById('sort-control').style.display = 'flex';
-      renderCards(saved, true);
+      currentCategory=null;
+      document.getElementById('sort-control').style.display='flex';
+      renderCards(saved,true);
     }
 
     function toggleBookmark(id, btn) {
       if (bookmarkedIds.has(id)) {
-        bookmarkedIds.delete(id);
-        btn.classList.replace('bookmark-active','bookmark-inactive');
-        btn.querySelector('svg').setAttribute('fill','none');
-        btn.querySelector('.bm-label').textContent='북마크'; btn.title='북마크 추가';
+        bookmarkedIds.delete(id); btn.classList.replace('bookmark-active','bookmark-inactive');
+        btn.querySelector('svg').setAttribute('fill','none'); btn.querySelector('.bm-label').textContent='북마크'; btn.title='북마크 추가';
       } else {
-        bookmarkedIds.add(id);
-        btn.classList.replace('bookmark-inactive','bookmark-active');
-        btn.querySelector('svg').setAttribute('fill','currentColor');
-        btn.querySelector('.bm-label').textContent='북마크됨'; btn.title='북마크 제거';
+        bookmarkedIds.add(id); btn.classList.replace('bookmark-inactive','bookmark-active');
+        btn.querySelector('svg').setAttribute('fill','currentColor'); btn.querySelector('.bm-label').textContent='북마크됨'; btn.title='북마크 제거';
       }
     }
 
     function renderCards(articles, isBookmark=false) {
       const container = document.getElementById('news-container');
       if (!articles?.length) {
-        container.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
+        container.innerHTML=`<div class="bg-white rounded-xl border border-gray-200 p-16 text-center">
           <div class="text-4xl mb-3">🔖</div>
           <p class="text-gray-400 text-sm">${isBookmark?'저장된 북마크가 없습니다.':'뉴스가 없습니다.'}</p></div>`;
         return;
       }
       container.innerHTML = articles.map((news,idx) => {
-        const bookmarked = bookmarkedIds.has(news.id);
-        const lines = news.summary?.length ? news.summary : ['요약 정보를 불러올 수 없습니다.'];
+        const bookmarked=bookmarkedIds.has(news.id);
+        const lines=news.summary?.length?news.summary:['요약 정보를 불러올 수 없습니다.'];
         return `
           <article data-id="${news.id}" class="bg-white rounded-xl border border-gray-200 p-6 card-hover"
-            style="animation: fadeIn 0.25s ease both; animation-delay: ${idx*0.06}s">
+            style="animation:fadeIn .25s ease both;animation-delay:${idx*.06}s">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2 flex-wrap">
                 <span class="text-xs text-brand-500 bg-brand-50 px-2 py-0.5 rounded-md" style="font-weight:600">${escHtml(news.tag)}</span>
@@ -643,10 +631,11 @@
                 <a href="${escAttr(news.url)}" target="_blank" rel="noopener noreferrer"
                   class="inline-flex items-center gap-1.5 text-xs text-white bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg transition" style="font-weight:600">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                   </svg>원본 기사 보기
                 </a>
-                <button onclick="toggleBookmark('${news.id}', this)" title="${bookmarked?'북마크 제거':'북마크 추가'}"
+                <button onclick="toggleBookmark('${news.id}',this)" title="${bookmarked?'북마크 제거':'북마크 추가'}"
                   class="${bookmarked?'bookmark-active':'bookmark-inactive'} inline-flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border border-gray-200 hover:border-brand-500 transition">
                   <svg class="w-4 h-4" fill="${bookmarked?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
@@ -661,33 +650,21 @@
 
     // ── 유틸 ──────────────────────────────────────────────────────────
     function toKST(iso) {
-      if (!iso) return '';
-      const d = new Date(iso);
-      return new Date(d.getTime() + 9*60*60*1000).toISOString().replace('Z','');
+      if(!iso) return ''; const d=new Date(iso); return new Date(d.getTime()+9*3600000).toISOString().replace('Z','');
     }
-    function extractDomain(url) {
-      try { return new URL(url).hostname.replace(/^www\./,''); } catch { return '뉴스'; }
-    }
+    function extractDomain(url) { try{return new URL(url).hostname.replace(/^www\./,'')}catch{return '뉴스'} }
     function relativeTime(pubDate) {
-      if (!pubDate) return '';
-      const diff = Date.now()-new Date(pubDate).getTime();
-      const m=Math.floor(diff/60000), h=Math.floor(diff/3600000), d=Math.floor(diff/86400000);
-      if(m<1) return '방금 전'; if(m<60) return `${m}분 전`; if(h<24) return `${h}시간 전`; return `${d}일 전`;
+      if(!pubDate) return '';
+      const diff=Date.now()-new Date(pubDate).getTime(), m=Math.floor(diff/60000), h=Math.floor(diff/3600000), d=Math.floor(diff/86400000);
+      if(m<1)return '방금 전'; if(m<60)return `${m}분 전`; if(h<24)return `${h}시간 전`; return `${d}일 전`;
     }
     function updateTimestamp() {
-      const now=new Date(), p=n=>String(n).padStart(2,'0');
-      document.getElementById('last-updated').textContent =
-        `Last updated: ${now.getFullYear()}.${p(now.getMonth()+1)}.${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}`;
+      const now=new Date(),p=n=>String(n).padStart(2,'0');
+      document.getElementById('last-updated').textContent=`Last updated: ${now.getFullYear()}.${p(now.getMonth()+1)}.${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}`;
     }
-    function updateTabCount(cat, count) {
-      const el = document.querySelector(`[data-cat="${cat}"] .tab-count`); if(el) el.textContent=count;
-    }
-    function escHtml(str) {
-      if(!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function escAttr(str) {
-      if(!str) return '#'; const s=String(str).trim(); return /^https?:\/\//i.test(s)?s.replace(/"/g,'%22'):'#';
-    }
+    function updateTabCount(cat,count) { const el=document.querySelector(`[data-cat="${cat}"] .tab-count`); if(el)el.textContent=count; }
+    function escHtml(str) { if(!str)return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function escAttr(str) { if(!str)return '#'; const s=String(str).trim(); return /^https?:\/\//i.test(s)?s.replace(/"/g,'%22'):'#'; }
 
     fetchNews('economy');
   </script>
