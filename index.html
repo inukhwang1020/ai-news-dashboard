@@ -494,7 +494,7 @@
               const dateOpen=state.openDate===date;
               const batchRows=dateOpen?batches.map(b=>`
                 <div class="tree-row flex items-center gap-2 pl-12 pr-3 py-1.5 text-xs cursor-pointer"
-                  style="color:#6b7280" onclick="loadBatchFromTree('${b.batch_id}','${c.key}','${escAttr(date)}')">
+                  style="color:#6b7280" onclick="loadBatchFromTree('${b.batch_id}','${c.key}','${date}')">
                   <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background:#6366f1;opacity:.6"></span>
                   <span>${b.kst.slice(11,16)}</span>
                   <span class="ml-auto" style="color:#6366f1;font-weight:600">${b.count}건</span>
@@ -502,7 +502,7 @@
               return `
                 <div>
                   <div class="tree-row flex items-center gap-1.5 pl-7 pr-3 py-1.5 text-xs cursor-pointer select-none"
-                    style="color:#6b7280" onclick="toggleArchiveTreeDate('${c.key}','${escAttr(date)}')">
+                    style="color:#6b7280" onclick="toggleArchiveTreeDate('${c.key}','${date}')">
                     <svg class="tree-chevron w-3 h-3 flex-shrink-0 ${dateOpen?'open':''}" style="color:#9ca3af"
                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
