@@ -463,11 +463,26 @@
 
     <!-- ── Main Content ──────────────────────────────────────────────── -->
     <main class="flex-1 min-w-0">
-      <div class="mb-5 flex items-center justify-between">
-        <div>
-          <h2 id="cat-title" class="text-xl gradient-text" style="font-weight:700">경제</h2>
-          <p id="cat-subtitle" class="text-xs mt-0.5" style="color:#6366f1">글로벌 경제 동향 실시간 뉴스</p>
+      <!-- 히어로 배경 이미지 -->
+      <div id="cat-hero" style="
+        height:160px; border-radius:1rem; margin-bottom:1.25rem; overflow:hidden;
+        position:relative; background-size:cover; background-position:center;
+        background-image:url('https://images.unsplash.com/photo-1771736007101-2f5a80447779?w=1400&q=75&fit=crop&auto=format');
+        transition:background-image 0.3s ease;
+        box-shadow:0 4px 24px rgba(99,102,241,0.18);
+      ">
+        <div id="cat-hero-overlay" style="
+          position:absolute; inset:0; border-radius:1rem;
+          background:linear-gradient(135deg,rgba(99,102,241,0.55),rgba(79,70,229,0.35));
+        "></div>
+        <div style="position:absolute; inset:0; padding:1.5rem 1.75rem; display:flex; flex-direction:column; justify-content:flex-end;">
+          <h2 id="cat-title" class="text-2xl" style="font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.3);line-height:1.2">경제</h2>
+          <p id="cat-subtitle" class="text-sm mt-1" style="color:rgba(255,255,255,0.85);text-shadow:0 1px 6px rgba(0,0,0,0.25)">글로벌 경제 동향 실시간 뉴스</p>
         </div>
+      </div>
+
+      <div class="mb-4 flex items-center justify-between">
+        <div></div>
         <div id="sort-control" class="flex items-center gap-2">
           <span class="text-xs" style="color:#9ca3af">정렬</span>
           <select class="dark-input text-xs" style="width:auto;padding:0.375rem 0.625rem">
@@ -623,6 +638,16 @@
       risk:       { title: '리스크 관리',   subtitle: '주요 위험 요소 실시간 뉴스',          tag: '리스크'  },
       archive:    { title: '뉴스 아카이브', subtitle: '날짜/시간별 저장된 뉴스 조회',        tag: '아카이브' },
       discussion: { title: '토론 게시판',   subtitle: '뉴스에 대한 의견을 나눠보세요',       tag: '토론'    }
+    };
+    const heroImages = {
+      economy:    'https://images.unsplash.com/photo-1771736007101-2f5a80447779?w=1400&q=75&fit=crop&auto=format',
+      tech:       'https://images.unsplash.com/photo-1744640326166-433469d102f2?w=1400&q=75&fit=crop&auto=format',
+      risk:       'https://plus.unsplash.com/premium_photo-1733306489269-449d1e8ae119?w=1400&q=75&fit=crop&auto=format',
+    };
+    const heroOverlay = {
+      economy:    'linear-gradient(135deg,rgba(99,102,241,0.55),rgba(79,70,229,0.35))',
+      tech:       'linear-gradient(135deg,rgba(14,165,233,0.55),rgba(2,132,199,0.35))',
+      risk:       'linear-gradient(135deg,rgba(16,185,129,0.55),rgba(5,150,105,0.35))',
     };
     const RSS_FEEDS = {
       economy: [
@@ -787,6 +812,25 @@
       document.getElementById('cat-title').textContent    = categoryMeta[cat].title;
       document.getElementById('cat-subtitle').textContent = categoryMeta[cat].subtitle;
       document.getElementById('sort-control').style.display = (cat==='discussion'||cat==='archive')?'none':'flex';
+      const hero = document.getElementById('cat-hero');
+      const heroOvl = document.getElementById('cat-hero-overlay');
+      const heroTitle = document.getElementById('cat-title');
+      const heroSub = document.getElementById('cat-subtitle');
+      if (hero) {
+        if (heroImages[cat]) {
+          hero.style.backgroundImage = `url('${heroImages[cat]}')`;
+          hero.style.height = '160px';
+          if (heroOvl) { heroOvl.style.background = heroOverlay[cat]; heroOvl.style.display='block'; }
+          if (heroTitle) { heroTitle.style.color='#fff'; heroTitle.style.webkitTextFillColor='#fff'; heroTitle.style.backgroundImage='none'; }
+          if (heroSub)   { heroSub.style.color='rgba(255,255,255,0.85)'; }
+        } else {
+          hero.style.backgroundImage = 'none';
+          hero.style.height = '64px';
+          if (heroOvl) heroOvl.style.display = 'none';
+          if (heroTitle) { heroTitle.style.color=''; heroTitle.style.webkitTextFillColor='transparent'; heroTitle.style.backgroundImage='linear-gradient(135deg,#6366f1 0%,#4f46e5 50%,#7c3aed 100%)'; }
+          if (heroSub)   { heroSub.style.color='#6366f1'; }
+        }
+      }
       if (cat==='discussion') { articleContext=ctx; fetchDiscussions(); }
       else if (cat==='archive') { showArchiveHint(); }
       else if (liveCache[cat]) { renderCards(liveCache[cat]); }
