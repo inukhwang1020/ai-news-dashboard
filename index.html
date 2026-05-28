@@ -857,6 +857,12 @@
         document.getElementById('cat-title').textContent    = categoryMeta.archive.title;
         document.getElementById('cat-subtitle').textContent = categoryMeta.archive.subtitle;
         document.getElementById('sort-control').style.display = 'none';
+        const _hero=document.getElementById('cat-hero'), _ovl=document.getElementById('cat-hero-overlay');
+        const _ht=document.getElementById('cat-title'), _hs=document.getElementById('cat-subtitle');
+        if(_hero){ _hero.style.backgroundImage=`url('${heroImages.archive}')`; _hero.style.height='160px';
+          if(_ovl){_ovl.style.background=heroOverlay.archive;_ovl.style.display='block';}
+          if(_ht){_ht.style.color='#fff';_ht.style.webkitTextFillColor='#fff';_ht.style.backgroundImage='none';}
+          if(_hs){_hs.style.color='rgba(255,255,255,0.85)';} }
         showArchiveHint(); renderArchiveTree();
       } else {
         container.classList.add('hidden'); chevron.classList.remove('open');
