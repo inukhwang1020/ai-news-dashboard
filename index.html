@@ -178,6 +178,19 @@
 
     /* ── Divider ── */
     .divider { border-color: rgba(99,102,241,0.1); }
+
+    /* ── OpenAI Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(30,27,75,0.38);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn .18s ease both;
+    }
+    .modal-overlay.hidden { display: none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin .8s linear infinite; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -207,12 +220,79 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
+        <button onclick="showOpenAiModal()" title="OpenAI API 키 설정"
+          class="flex items-center gap-2 text-xs px-3 py-1.5 rounded-full transition"
+          style="color:#6b7280;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15)">
+          <div id="ai-status-dot" class="w-2 h-2 rounded-full flex-shrink-0" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b"></div>
+          <span id="ai-status-text">AI 키 설정</span>
+        </button>
         <div class="w-2 h-2 rounded-full" style="background:#10b981;box-shadow:0 0 6px #10b981" title="연결됨"></div>
         <span id="last-updated" class="text-xs px-3 py-1.5 rounded-full"
           style="color:#6b7280;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15)">Last updated: —</span>
       </div>
     </div>
   </header>
+
+  <!-- ── OpenAI API Key Modal ──────────────────────────────────────────── -->
+  <div id="openai-modal" class="modal-overlay hidden">
+    <div class="glass-card w-full mx-4 p-8" style="max-width:420px;animation:fadeIn .2s ease both;box-shadow:0 24px 80px rgba(99,102,241,.28)">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+          style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 16px rgba(99,102,241,.35)">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm" style="font-weight:700;color:#1e1b4b">OpenAI API 키 설정</h2>
+          <p class="text-xs mt-0.5" style="color:#6366f1">AI 뉴스 자동 요약을 활성화합니다</p>
+        </div>
+      </div>
+      <div class="rounded-lg px-4 py-3 mb-5" style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15)">
+        <p class="text-xs leading-relaxed" style="color:#6b7280">
+          API 키를 입력하면 각 카테고리 뉴스를 <strong style="color:#4338ca">GPT-4o-mini</strong>로 자동 요약합니다.
+          키는 이 브라우저에만 저장되며 서버로 전송되지 않습니다.
+        </p>
+      </div>
+      <div class="mb-5">
+        <label class="text-xs mb-1.5 block" style="font-weight:600;color:#4338ca">API Key</label>
+        <div class="relative">
+          <input id="openai-key-input" type="password" placeholder="sk-..." class="dark-input pr-10"
+            onkeydown="if(event.key==='Enter')saveOpenAiKey()"/>
+          <button onclick="toggleKeyVisibility()" type="button"
+            class="absolute right-3 top-1/2 -translate-y-1/2 p-0.5" style="color:#9ca3af" title="보기/숨기기">
+            <svg id="key-eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 5.943 7.523 3 12 3c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="text-xs mt-1.5" style="color:#9ca3af">
+          키 발급:
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer"
+            style="color:#6366f1">platform.openai.com</a>
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="saveOpenAiKey()" class="btn-primary flex-1 justify-center" style="padding:.625rem 1rem">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          저장 및 적용
+        </button>
+        <button onclick="closeOpenAiModal()" class="btn-ghost flex-1 justify-center" style="padding:.625rem 1rem">나중에</button>
+      </div>
+      <div id="openai-key-delete-row" class="mt-4 text-center hidden">
+        <button onclick="deleteOpenAiKey()" class="text-xs transition" style="color:#d1d5db"
+          onmouseenter="this.style.color='#ef4444'" onmouseleave="this.style.color='#d1d5db'">
+          저장된 키 삭제
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="max-w-7xl mx-auto px-6 py-6 flex gap-5">
 
@@ -304,6 +384,121 @@
   </div>
 
   <script>
+    // ── OpenAI 키 관리 ────────────────────────────────────────────────
+    let openAiKey = localStorage.getItem('openai_api_key') || '';
+
+    function updateAiKeyStatus() {
+      const dot  = document.getElementById('ai-status-dot');
+      const text = document.getElementById('ai-status-text');
+      if (!dot || !text) return;
+      if (openAiKey) {
+        dot.style.background  = '#10b981'; dot.style.boxShadow = '0 0 6px #10b981';
+        text.textContent = 'AI 활성';
+      } else {
+        dot.style.background  = '#f59e0b'; dot.style.boxShadow = '0 0 6px #f59e0b';
+        text.textContent = 'AI 키 설정';
+      }
+    }
+
+    function showOpenAiModal() {
+      const modal = document.getElementById('openai-modal');
+      const input = document.getElementById('openai-key-input');
+      const delRow = document.getElementById('openai-key-delete-row');
+      if (input) { input.value = openAiKey || ''; input.type = 'password'; }
+      if (delRow) delRow.classList.toggle('hidden', !openAiKey);
+      modal.classList.remove('hidden');
+    }
+
+    function closeOpenAiModal() {
+      document.getElementById('openai-modal').classList.add('hidden');
+      if (!liveCache[currentCategory] && RSS_FEEDS[currentCategory]) fetchNews(currentCategory);
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('openai-key-input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function saveOpenAiKey() {
+      const key = (document.getElementById('openai-key-input')?.value || '').trim();
+      if (key && !key.startsWith('sk-')) { alert('올바른 OpenAI API Key를 입력해주세요. (sk- 로 시작)'); return; }
+      openAiKey = key;
+      if (key) localStorage.setItem('openai_api_key', key); else localStorage.removeItem('openai_api_key');
+      document.getElementById('openai-modal').classList.add('hidden');
+      updateAiKeyStatus();
+      if (RSS_FEEDS[currentCategory]) { delete liveCache[currentCategory]; fetchNews(currentCategory); }
+    }
+
+    function deleteOpenAiKey() {
+      if (!confirm('저장된 API 키를 삭제하시겠습니까?')) return;
+      openAiKey = ''; localStorage.removeItem('openai_api_key');
+      const input = document.getElementById('openai-key-input');
+      if (input) input.value = '';
+      document.getElementById('openai-key-delete-row')?.classList.add('hidden');
+      updateAiKeyStatus();
+    }
+
+    // ── OpenAI 요약 ───────────────────────────────────────────────────
+    async function summarizeWithOpenAI(articles, cat) {
+      const items = articles.map((a, i) => {
+        const desc = (a.rawDesc || '').slice(0, 400);
+        return `${i + 1}. 제목: ${a.title}\n내용: ${desc}`;
+      }).join('\n\n');
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${openAiKey}` },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: '당신은 뉴스 요약 전문가입니다. 간결하고 핵심적인 한국어 요약을 제공합니다.' },
+            { role: 'user',   content: `다음 ${CAT_LABELS[cat] || cat} 뉴스 기사들을 각각 3문장으로 핵심만 한국어로 요약하세요.\n반드시 JSON 배열만 출력하세요. 형식: [["문장1","문장2","문장3"], ...]\n\n${items}` }
+          ],
+          max_tokens: 1500,
+          temperature: 0.3
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      const match = content.match(/\[[\s\S]*\]/);
+      if (!match) throw new Error('응답 파싱 실패');
+      return JSON.parse(match[0]);
+    }
+
+    function setAiBanner(state, msg) {
+      let el = document.getElementById('ai-banner');
+      if (state === 'hide') { el?.remove(); return; }
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'ai-banner';
+        el.className = 'glass-card px-4 py-2.5 flex items-center gap-2 text-xs mb-3';
+        document.getElementById('news-container').insertAdjacentElement('beforebegin', el);
+      }
+      if (state === 'loading') {
+        el.style.cssText = 'color:#6366f1;border-color:rgba(99,102,241,.3)';
+        el.innerHTML = `<svg class="w-4 h-4 flex-shrink-0 spin" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="60" stroke-dashoffset="20"/>
+        </svg><span>${escHtml(msg)}</span>`;
+      } else if (state === 'error') {
+        el.style.cssText = 'color:#ef4444;border-color:rgba(239,68,68,.25)';
+        el.innerHTML = `<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg><span>${escHtml(msg)}</span>`;
+        setTimeout(() => el?.remove(), 4000);
+      } else if (state === 'done') {
+        el.style.cssText = 'color:#10b981;border-color:rgba(16,185,129,.25)';
+        el.innerHTML = `<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg><span>${escHtml(msg)}</span>`;
+        setTimeout(() => el?.remove(), 2500);
+      }
+    }
+
     const SUPABASE_URL = 'https://zpamwbrbvprlulzxrbkr.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYW13YnJidnBybHVsenhyYmtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4MjUzNjYsImV4cCI6MjA5NTQwMTM2Nn0.HULOQVq_SziDWSQb8wXj17EItQwSxkl6jkR4RXAsCTw';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -407,12 +602,33 @@
         const articles = items.map((item,idx) => {
           const get = tag => { const el=item.querySelector(tag); return el?el.textContent.trim():''; };
           const url = get('link')||get('guid');
+          const rawDesc = get('description');
           return { id:`${cat}_${idx}`, title:get('title'), source:extractDomain(url||RSS_FEEDS[cat]),
-                   time:relativeTime(get('pubDate')), url, tag:categoryMeta[cat].tag, summary:parseDescription(get('description')) };
+                   time:relativeTime(get('pubDate')), url, tag:categoryMeta[cat].tag,
+                   summary:parseDescription(rawDesc), rawDesc };
         });
         liveCache[cat] = articles;
         updateTimestamp(); updateTabCount(cat,articles.length); renderCards(articles);
         saveToArchive(articles,cat);
+
+        // OpenAI 요약
+        if (openAiKey) {
+          setAiBanner('loading', 'AI가 뉴스를 분석하고 있습니다…');
+          try {
+            const summaries = await summarizeWithOpenAI(articles, cat);
+            if (Array.isArray(summaries)) {
+              summaries.forEach((s, i) => {
+                if (articles[i] && Array.isArray(s) && s.length) articles[i].summary = s;
+              });
+              liveCache[cat] = articles;
+              renderCards(articles);
+              setAiBanner('done', 'AI 요약 완료');
+            }
+          } catch(e) {
+            console.warn('[OpenAI]', e);
+            setAiBanner('error', 'AI 요약 실패: ' + e.message);
+          }
+        }
       } catch(err) { console.warn('[RSS]',err); showError(cat); }
     }
 
@@ -978,7 +1194,12 @@
       return `<div class="glass-card p-10 text-center text-xs" style="color:#9ca3af">${escHtml(msg)}</div>`;
     }
 
-    fetchNews('economy');
+    updateAiKeyStatus();
+    if (openAiKey) {
+      fetchNews('economy');
+    } else {
+      showOpenAiModal();
+    }
   </script>
 </body>
 </html>
