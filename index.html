@@ -625,9 +625,21 @@
       discussion: { title: '토론 게시판',   subtitle: '뉴스에 대한 의견을 나눠보세요',       tag: '토론'    }
     };
     const RSS_FEEDS = {
-      economy: 'https://rss.donga.com/economy.xml',
-      tech:    'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=07',
-      risk:    'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=03'
+      economy: [
+        'https://rss.donga.com/economy.xml',          // 동아일보 경제
+        'https://www.hankyung.com/feed/economy',       // 한국경제
+        'https://rss.etnews.com/30.xml',               // 전자신문 경제
+      ],
+      tech: [
+        'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=07', // SBS IT·과학
+        'https://rss.etnews.com/02.xml',               // 전자신문 IT
+        'https://rss.donga.com/it.xml',                // 동아일보 IT
+      ],
+      risk: [
+        'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=03', // SBS 사회
+        'https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=01', // SBS 정치
+        'https://rss.donga.com/national.xml',          // 동아일보 사회
+      ]
     };
     const CAT_LABELS = { economy:'경제', tech:'테크', risk:'리스크 관리' };
     const CAT_ICONS  = { economy:'📈',  tech:'💡',  risk:'🛡️' };
@@ -687,37 +699,58 @@
       if(!str)return '#'; const s=String(str).trim(); return /^https?:\/\//i.test(s)?s.replace(/"/g,'%22'):'#';
     }
 
-    // ── RSS fetch ─────────────────────────────────────────────────────
+    // ── RSS fetch (멀티 피드 병렬) ────────────────────────────────────
     async function fetchNews(cat) {
       showSkeleton();
       try {
-        const text = await fetchRss(RSS_FEEDS[cat]);
-        const doc  = new DOMParser().parseFromString(text,'text/xml');
-        const items = [...doc.querySelectorAll('item')].slice(0,5);
-        if (!items.length) throw new Error('No items');
-        const articles = items.map((item,idx) => {
-          const get = tag => { const el=item.querySelector(tag); return el?el.textContent.trim():''; };
-          const url = get('link')||get('guid');
-          const rawDesc = get('description');
-          return { id:`${cat}_${idx}`, title:get('title'), source:extractDomain(url||RSS_FEEDS[cat]),
-                   time:relativeTime(get('pubDate')), url, tag:categoryMeta[cat].tag,
-                   summary:parseDescription(rawDesc), rawDesc };
+        const feeds = RSS_FEEDS[cat];
+
+        // 모든 피드 병렬 fetch
+        const results = await Promise.allSettled(feeds.map(url => fetchRss(url)));
+
+        let allArticles = [];
+        results.forEach((result, fi) => {
+          if (result.status !== 'fulfilled') return;
+          const doc = new DOMParser().parseFromString(result.value, 'text/xml');
+          [...doc.querySelectorAll('item')].slice(0, 5).forEach((item, idx) => {
+            const get = tag => { const el = item.querySelector(tag); return el ? el.textContent.trim() : ''; };
+            const url = get('link') || get('guid');
+            const rawDesc = get('description');
+            const pubDate = get('pubDate');
+            allArticles.push({
+              id: `${cat}_${fi}_${idx}`,
+              title: get('title'), source: extractDomain(url || feeds[fi]),
+              time: relativeTime(pubDate), pubMs: pubDate ? new Date(pubDate).getTime() : 0,
+              url, tag: categoryMeta[cat].tag,
+              summary: parseDescription(rawDesc), rawDesc
+            });
+          });
         });
-        liveCache[cat] = articles;
-        updateTimestamp(); updateTabCount(cat,articles.length); renderCards(articles);
-        saveToArchive(articles,cat);
+
+        if (!allArticles.length) throw new Error('No articles from any feed');
+
+        // 중복 제거 (제목 앞 20자 기준), 최신순 정렬, 최대 9개
+        const seen = new Set();
+        allArticles = allArticles
+          .filter(a => { const k = a.title.slice(0, 20); if (seen.has(k)) return false; seen.add(k); return true; })
+          .sort((a, b) => b.pubMs - a.pubMs)
+          .slice(0, 9);
+
+        liveCache[cat] = allArticles;
+        updateTimestamp(); updateTabCount(cat, allArticles.length); renderCards(allArticles);
+        saveToArchive(allArticles, cat);
 
         // OpenAI 요약
         if (openAiKey) {
           setAiBanner('loading', 'AI가 뉴스를 분석하고 있습니다…');
           try {
-            const summaries = await summarizeWithOpenAI(articles, cat);
+            const summaries = await summarizeWithOpenAI(allArticles, cat);
             if (Array.isArray(summaries)) {
               summaries.forEach((s, i) => {
-                if (articles[i] && Array.isArray(s) && s.length) articles[i].summary = s;
+                if (allArticles[i] && Array.isArray(s) && s.length) allArticles[i].summary = s;
               });
-              liveCache[cat] = articles;
-              renderCards(articles);
+              liveCache[cat] = allArticles;
+              renderCards(allArticles);
               setAiBanner('done', 'AI 요약 완료');
             }
           } catch(e) {
@@ -725,7 +758,7 @@
             setAiBanner('error', 'AI 요약 실패: ' + e.message);
           }
         }
-      } catch(err) { console.warn('[RSS]',err); showError(cat); }
+      } catch(err) { console.warn('[RSS]', err); showError(cat); }
     }
 
     async function saveToArchive(articles,cat) {
